@@ -6,13 +6,14 @@ from random import randint
 import asyncio
 from fonction_sql import *
 import sqlite3
+import os
 
 
 ### EDIT A FAIRE ###
 # Modifier l'id de la guild et du rôle everyone 
 
 
-bot = interactions.Client(token=token, intents=interactions.Intents.ALL, presence=interactions.ClientPresence(
+bot = interactions.Client(token=os.read["DISCORD_TOKEN"], intents=interactions.Intents.ALL, presence=interactions.ClientPresence(
     status=interactions.StatusType.ONLINE, activities = [ interactions.PresenceActivity(
         name= "Régir l'humanité.", 
         type=interactions. PresenceActivityType.GAME

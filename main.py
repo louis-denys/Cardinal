@@ -13,7 +13,7 @@ import os
 # Modifier l'id de la guild et du rôle everyone 
 
 
-bot = interactions.Client(token=os.read["DISCORD_TOKEN"], intents=interactions.Intents.ALL, presence=interactions.ClientPresence(
+bot = interactions.Client(token=os.environ["DISCORD_TOKEN"], intents=interactions.Intents.ALL, presence=interactions.ClientPresence(
     status=interactions.StatusType.ONLINE, activities = [ interactions.PresenceActivity(
         name= "Régir l'humanité.", 
         type=interactions. PresenceActivityType.GAME

@@ -51,7 +51,7 @@ automatiquement la commande sera déployé (environs 1h d'attente)
 async def carte(ctx: interactions.CommandContext):
     await ctx.send(embeds =
         interactions.Embed(
-            title = 'Carte de Ryudh',
+            title = "Carte de l'archipel",
             color = 221932,
             image = interactions.EmbedImageStruct(
                 url = "https://media.discordapp.net/attachments/1071869565757308938/1073336423597481994/Train_1.jpg?width=745&height=559"
@@ -415,7 +415,7 @@ async def admin_reglement(ctx):
     await ctx.send(embeds = interactions.Embed(
         title = 'Valider le Règlement ✨',
         color = 221932,
-        description = 'Cliquez ici pour confirmer avoir lu et accepter le règlement !',
+        description = 'Cliquez ici pour confirmer avoir lu et accepté le règlement !',
     ), components=check)
 
 

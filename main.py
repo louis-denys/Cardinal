@@ -1,7 +1,6 @@
 import interactions
 #import discord
 from interactions import ActionRow, Button
-from data import token
 from random import randint
 import asyncio
 from fonction_sql import *

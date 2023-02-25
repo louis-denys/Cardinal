@@ -539,7 +539,6 @@ async def on_message_create(msg: interactions.Message):
         if not user.bot:
             xp = len(msg.content) / 10
             curent_xp = look_in_bdd(user.id)[0][2]
-            maj_xp(user.id, curent_xp+xp)
             
             #Check lvl up
             if (xp+curent_xp) /1000 >= 1:
@@ -547,6 +546,8 @@ async def on_message_create(msg: interactions.Message):
                 reste = look_in_bdd(user.id)[0][2] - 1000 + len(msg.content) / 10
                 lvl_up(user.id, lvl+1)
                 maj_xp(user.id, round(reste, 1))
+            else:
+                maj_xp(user.id, curent_xp+xp)
     except:
         if look_in_bdd(user.id) == []:
             add_to_bdd(user.id, 0, 0)
@@ -565,57 +566,57 @@ async def rank(ctx: interactions.CommandContext):
         fields = [
             interactions.EmbedField(
             name="1.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[0][0])).mention} **LVL** {data[0][2]} **|** {data[0][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[0][0])).mention} **LVL** {data[0][2]} **|** {round(data[0][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="2.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[1][0])).mention} **LVL** {data[1][2]} **|** {data[1][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[1][0])).mention} **LVL** {data[1][2]} **|** {round(data[1][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="3.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[2][0])).mention} **LVL** {data[2][2]} **|** {data[2][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[2][0])).mention} **LVL** {data[2][2]} **|** {round(data[2][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="4.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[3][0])).mention} **LVL** {data[3][2]} **|** {data[3][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[3][0])).mention} **LVL** {data[3][2]} **|** {round(data[3][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="5.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[4][0])).mention} **LVL** {data[4][2]} **|** {data[4][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[4][0])).mention} **LVL** {data[4][2]} **|** {round(data[4][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="6.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[5][0])).mention} **LVL** {data[5][2]} **|** {data[5][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[5][0])).mention} **LVL** {data[5][2]} **|** {round(data[5][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="7.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[6][0])).mention} **LVL** {data[6][2]} **|** {data[6][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[6][0])).mention} **LVL** {data[6][2]} **|** {round(data[6][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="8.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[7][0])).mention} **LVL** {data[7][2]} **|** {data[7][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[7][0])).mention} **LVL** {data[7][2]} **|** {round(data[7][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="9.",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[8][0])).mention} **LVL** {data[8][2]} **|** {data[8][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[8][0])).mention} **LVL** {data[8][2]} **|** {round(data[8][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="10:",
-            value=f"{(await interactions.get(bot, interactions.User, object_id=data[9][0])).mention} **LVL** {data[9][2]} **|** {data[9][1]}**/1000 XP**",
+            value=f"{(await interactions.get(bot, interactions.User, object_id=data[9][0])).mention} **LVL** {data[9][2]} **|** {round(data[9][1], 1)}**/1000 XP**",
             inline=False
                     ),
             interactions.EmbedField(
             name="Vous:",
-            value=f"{(await interactions.get(bot, interactions.Member, parent_id=guild_id, object_id=ctx.user.id)).mention} **LVL** {look_in_bdd(ctx.user.id)[0][3]} **|** {look_in_bdd(ctx.user.id)[0][2]}**/1000 Xp**",
+            value=f"{(await interactions.get(bot, interactions.Member, parent_id=guild_id, object_id=ctx.user.id)).mention} **LVL** {look_in_bdd(ctx.user.id)[0][3]} **|** {round(look_in_bdd(ctx.user.id)[0][2], 1)}**/1000 Xp**",
             inline=False)
         ]
     ))

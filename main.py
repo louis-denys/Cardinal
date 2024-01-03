@@ -1,21 +1,20 @@
 import interactions
 #import discord
-from interactions import ActionRow, Button
-from random import randint
+from interactions import *
+from random import randint, choice
 import asyncio
 from fonction_sql import *
 import sqlite3
-import os
-
+import json
 
 ### EDIT A FAIRE ###
 # Modifier l'id de la guild et du rôle everyone 
 
 
-bot = interactions.Client(token=os.environ["DISCORD_TOKEN"], intents=interactions.Intents.ALL, presence=interactions.ClientPresence(
+bot = interactions.Client(token="NzI5OTg5NTY3NDQ0NDE4NjMy.Gsi8la.mFWMPHCysEv-yPiQcpqPRq20m0W8jKGUejOs_k", intents=interactions.Intents.ALL, presence=interactions.ClientPresence(
     status=interactions.StatusType.ONLINE, activities = [ interactions.PresenceActivity(
         name= "Régir l'humanité.", 
-        type=interactions. PresenceActivityType.GAME
+        type=interactions.PresenceActivityType.GAME
 )]))
 
 guild_id = 1071867748805775500
@@ -41,6 +40,94 @@ automatiquement la commande sera déployé (environs 1h d'attente)
 """
 
 ### RP ###
+
+# Enregistrement des aventurier
+@bot.command(
+        name = 'register',
+        description= 'Enregister un nouvel aventurier dans la BDD',
+        scope = guild_id,
+        default_member_permissions= interactions.Permissions.ADMINISTRATOR,
+        options= [
+            interactions.Option(
+            name='prenom',
+            description= "Le nom de l'aventurié", 
+            type = interactions.OptionType.STRING,
+            required = True
+        ),
+            interactions.Option(
+            name='nom',
+            description= "Le prénom de l'aventurié", 
+            type = interactions.OptionType.STRING,
+            required = True
+        ), 
+            interactions.Option(
+            name='proprietaire',
+            description= 'membre proprietaire de la fiche', 
+            type = interactions.OptionType.USER,
+            required = True
+        )
+        ]
+)
+async def enregistrement(ctx, nom, prenom, proprietaire):
+    add_aventurier(prenom, nom, proprietaire.id)
+    await ctx.send(f"L'aventurier {nom + ' ' + prenom} à bien été enregisté !")
+
+@bot.command(
+        name = 'remove',
+        description= 'Enregister un nouvel aventurier dans la BDD',
+        scope = guild_id,
+        default_member_permissions= interactions.Permissions.ADMINISTRATOR,
+        options= [
+            interactions.Option(
+            name='prenom',
+            description= "Le nom de l'aventurié", 
+            type = interactions.OptionType.STRING,
+            required = True
+        ),
+            interactions.Option(
+            name='nom',
+            description= "Le prénom de l'aventurié", 
+            type = interactions.OptionType.STRING,
+            required = True
+        )
+        ]
+)
+async def remove(ctx, prenom, nom):
+    remove_aventurier(prenom, nom)
+    await ctx.send(f"L'aventurier {prenom + ' ' + nom} à été effacé de la base de donnée !")
+
+@bot.command(
+        name = 'add_money', 
+        description= "DONNER DE LE THUNE !",
+        default_member_permissions=interactions.Permissions.ADMINISTRATOR,
+        scope = guild_id,
+        options= [
+            interactions.Option(
+            name='prenom',
+            description= "Le nom de l'aventurié", 
+            type = interactions.OptionType.STRING,
+            required = True
+        ),
+            interactions.Option(
+            name='nom',
+            description= "Le prénom de l'aventurié", 
+            type = interactions.OptionType.STRING,
+            required = True
+        ),
+            interactions.Option(
+                name ='montant', 
+                description='Montant à ajouter',
+                type = interactions.OptionType.INTEGER,
+                required= True
+            )
+        ]
+)
+async def add_money(ctx, prenom, nom, montant):
+    print(look_aventurier(prenom, nom))
+    curent_money = look_aventurier(prenom, nom)[0][2]
+    depot_retrait(prenom, nom, curent_money+montant)
+    await ctx.send(f"{montant}$ on été ajouté au compte de {prenom + ' ' + nom}, avec maintenant {curent_money+montant}$ disponible.")
+
 
 # Carte 
 @bot.command(
@@ -441,6 +528,69 @@ async def clear(ctx: interactions.CommandContext, nombre):
     await asyncio.sleep(2)
     await message.delete()
 
+# Giveways 
+participationGiveways = interactions.Button(
+    style=interactions.ButtonStyle.PRIMARY,
+    label="🗳️| Participer",
+    custom_id="participer"
+)
+@bot.component("participer")
+async def participer_giveways(ctx: interactions.CommandContext):
+    with open("giveway.json", "r") as f:
+        data = json.load(f)
+    if int(ctx.user.id) in data["Giveway"]:
+        await ctx.send("Vous participez déjà au giveway !", ephemeral=True)
+    else:
+        data["Giveway"].append(int(ctx.user.id))
+        await ctx.send('Votre participation à bien été enregistré !', ephemeral=True)
+    with open("giveway.json", "w") as f:
+        json.dump(data, f)
+    
+
+
+@bot.command(
+    name= 'giveway',
+    description= 'Génère un embed éphémère de giveways !', 
+    scope=guild_id,
+    default_member_permissions= interactions.Permissions.ADMINISTRATOR,
+    options = [
+        interactions.Option(
+            name='gain',
+            description= 'Que faire gagner ?', 
+            type = interactions.OptionType.STRING,
+            required = True
+        ),
+        interactions.Option(
+            name = 'temps',
+            description= 'Le temps du giveways en HEURES',
+            type= interactions.OptionType.INTEGER,
+            required = True
+        )
+    ] 
+)
+@autodefer()  # configurable
+async def giveway(ctx, gain, temps):
+    with open("giveway.json", "w") as f:
+        json.dump({"Giveway": []}, f)
+    await ctx.send(embeds = interactions.Embed(
+        title = '🎁 Giveways ! 🎁',
+        color = 221932,
+        fields = [
+        interactions.EmbedField(
+            name = f"Tentez de gagner {gain} !",
+            value = 'Clique ci dessous pour participer !'
+            )
+        ]
+    ), components = participationGiveways
+    )
+    await asyncio.sleep(3600*temps)
+    with open("giveway.json", "r") as f:
+        data = json.load(f)
+    member = await get(bot, interactions.Member, parent_id=guild_id, object_id= 712959784596406302) #choice(data['Giveway'])
+    await ctx.send(f"Félicitation {member.mention}, tu as gagné {gain}")
+
+
+
 # Aide
 @bot.command(
     name = 'help',
@@ -521,11 +671,11 @@ async def on_guild_member_add(member):
 
 @bot.event
 async def on_guild_member_remove(member):
-    #await member.add_role(1037771838387916874)
     channel = await interactions.get(bot, interactions.Channel, object_id=1071867749866942499)  #ID du salon
     stat = await interactions.get(bot, interactions.Channel, object_id=1071867749527195649)
     serveur = await interactions.get(bot, interactions.Guild, object_id=member.guild_id)
     await stat.modify(name=f"🔱•Members: {serveur.member_count}")
+    remove_aventurier(id= id(member.id))
     await channel.send(f"{member.mention} a succombé à l'érosion du temps...")
 
 

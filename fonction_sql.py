@@ -1,6 +1,8 @@
 import sqlite3
 path = 'data.db'
 
+### MEMBRE ###
+
 def add_to_bdd(id, warn, xp):
     """
     On ajoute un nouvelle enregistrement à la BDD
@@ -41,7 +43,7 @@ def bdd_rank():
     data = cur.fetchall()
 
     order = sorted(data, key= lambda data: data[1])
-    order = sorted(order, key=lambda data: data[2])
+    order = sorted(order, key= lambda data: data[2])
     order.reverse()
 
     conn.commit()
@@ -87,3 +89,64 @@ def lvl_up(id, lvl):
     conn.commit()
     cur.close()  
     conn.close()
+
+### Aventuriers ###
+
+def add_aventurier(prenom, nom, proprietaire):
+    """
+    Permet d'enregister un nouvel aventurier dans la BDD
+    """
+    conn = sqlite3.connect(path, check_same_thread=False)
+    cur = conn.cursor()
+
+    cur.execute(f"INSERT INTO AVENTURIER (prenom, nom, proprietaire) VALUES ('{prenom}', '{nom}', {proprietaire})")
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def remove_aventurier(prenom = None, nom = None, id = None):
+    """
+    Permet de retirer un aventurier de la BDD
+    """
+    conn = sqlite3.connect(path, check_same_thread=False)
+    cur = conn.cursor()
+    if prenom == None and nom == None:
+        cur.execute(f"DELETE FROM AVENTURIER WHERE prenom = '{prenom}' AND nom = '{nom}'")
+    else:
+        try:
+            cur.execute(f"DELETE FROM AVENTURIER WHERE id = {id}")
+        except:
+            pass
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def depot_retrait(prenom, nom, montant):
+    """
+    Ajouter de l'argent à un aventurier
+    """
+    conn = sqlite3.connect(path, check_same_thread=False)
+    cur = conn.cursor()
+
+    cur.execute(f"UPDATE AVENTURIER SET argent = {montant} where prenom = '{prenom}' AND nom = '{nom}'")
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def look_aventurier(prenom, nom):
+    """
+    Recuperer les infos depuis la table aventurier
+    """
+    conn = sqlite3.connect(path, check_same_thread=False)
+    cur = conn.cursor()
+
+    cur.execute(f"SELECT * FROM AVENTURIER WHERE prenom = '{prenom}' AND nom = '{nom}'")
+    data = cur.fetchall()
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    return data
